@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MUMSA - Murdoch University Muslim Students Association</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for a more elegant, university feel */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Playfair+Display:wght@700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f3f6; /* Light academic grey/blue */
+        }
+        
+        /* Define the new, richer color palette */
+        .text-mumsa-primary { color: #047857; } /* Emerald 700 - Deep Green */
+        .bg-mumsa-primary { background-color: #047857; }
+        .text-mumsa-accent { color: #facc15; } /* Amber 400 - Rich Gold */
+        .bg-mumsa-accent { background-color: #facc15; }
+
+        /* General Card Styling */
+        .mumsa-card {
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 4, 4, 0.05);
+        }
+        .mumsa-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.15), 0 6px 8px -6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Jumu'ah Specific Styling */
+        #juma-card {
+            background: linear-gradient(135deg, #065f46, #047857); /* Darker gradient */
+            border: 2px solid #facc15;
+            transition: all 0.3s ease-in-out;
+        }
+
+        /* Responsive Grid for Prayers */
+        .prayer-grid-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* 2 columns on mobile */
+            gap: 1rem;
+        }
+        @media (min-width: 640px) {
+            .prayer-grid-container {
+                grid-template-columns: repeat(3, 1fr); /* 3 columns on sm/tablet */
+            }
+        }
+        @media (min-width: 1024px) {
+            .prayer-grid-container {
+                grid-template-columns: repeat(5, 1fr); /* 5 columns on desktop */
+            }
+        }
+        
+        /* Core style for the dynamic blur effect */
+        .scroll-focused-section {
+            will-change: filter, transform; /* Optimize for animation */
+            transition: filter 0.1s linear; /* Fast transition for smooth scrolling */
+        }
+    </style>
+</head>
+<body class="min-h-screen antialiased">
+
+    <!-- Header & Navigation -->
+    <header class="bg-white shadow-md sticky top-0 z-10">
+        <div class="max-w-6xl mx-auto p-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-mumsa-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                <h1 class="text-xl font-extrabold text-mumsa-primary tracking-tight">MUMSA</h1>
+            </div>
+            <nav class="space-x-4">
+                <a href="#prayer-times" class="text-sm font-medium text-gray-600 hover:text-mumsa-primary transition-colors">Prayer</a>
+                <a href="#activities" class="text-sm font-medium text-gray-600 hover:text-mumsa-primary transition-colors">Activities</a>
+                <a href="#location" class="text-sm font-medium text-gray-600 hover:text-mumsa-primary transition-colors">Location</a>
+                <a href="#ai-assistant" class="text-sm font-medium text-gray-600 hover:text-mumsa-primary transition-colors hidden sm:inline-block">AI Help</a>
+                <a href="#" class="text-sm font-medium bg-mumsa-accent text-mumsa-primary py-2 px-4 rounded-full shadow-md hover:bg-amber-500 transition-colors hidden sm:inline-block">Join Us</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 py-10">
+
+        <!-- Hero Section -->
+        <section id="hero-section" class="mb-16 bg-white p-8 sm:p-12 rounded-2xl mumsa-card border-t-4 border-mumsa-primary scroll-focused-section">
+            <h2 class="text-4xl sm:text-5xl font-extrabold text-gray-900 mb-3 leading-tight font-['Playfair_Display']">
+                Welcome to the <span class="text-mumsa-primary">Murdoch University Muslim Students Association</span>
+            </h2>
+            <p class="text-lg sm:text-xl text-gray-600">
+                A hub for faith, community, and service. Connect with us for daily prayers, Friday gatherings, and support throughout the academic year.
+            </p>
+        </section>
+
+        <!-- Prayer Times Section -->
+        <section id="prayer-times" class="mb-16 scroll-focused-section">
+            <h3 class="text-3xl font-bold text-center text-gray-800 mb-8">Daily Prayer Timetable (Jamaat)</h3>
+
+            <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-xl">
+                <!-- Important Time Calculation Note -->
+                <div class="text-center mb-6 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700">
+                    <p class="text-sm font-semibold">
+                        ⚠️ **Jamaat Time Rule:** For daily prayers, the time shown is the **Adhan Time** plus **10 minutes**. Jumu'ah is a fixed time.
+                    </p>
+                </div>
+
+                <!-- Loading/Error Message -->
+                <div id="loading-message" class="text-center p-4 text-gray-500">
+                    <svg class="animate-spin h-5 w-5 mr-3 inline text-mumsa-primary" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                    Fetching live prayer times...
+                </div>
+
+                <!-- Prayer Times Grid -->
+                <div id="prayer-grid" class="prayer-grid-container hidden">
+                    <!-- Cards will be populated here by JavaScript -->
+                </div>
+
+                <!-- Jumu'ah Time Card - NEW STRUCTURE -->
+                <div class="mt-6 pt-6 border-t border-gray-100">
+                    <div id="juma-card" class="text-center text-white p-5 rounded-2xl mumsa-card transition hover:scale-[1.01]">
+                        <p class="text-2xl font-semibold mb-1">Jumu'ah (Friday) Congregation</p>
+                        <div class="flex justify-around mt-4 text-3xl font-extrabold tracking-wider">
+                            <div>
+                                <p class="text-base font-medium text-amber-200">Khutbah Starts</p>
+                                <p id="juma-khutbah-time" class="text-4xl">1:15 PM</p>
+                            </div>
+                            <div>
+                                <p class="text-base font-medium text-amber-200">Jamaat (Prayer)</p>
+                                <p id="juma-jamaat-time" class="text-4xl">1:30 PM</p>
+                            </div>
+                        </div>
+                        <p id="juma-note" class="text-sm text-amber-200 mt-2">Jumu'ah times are fixed - please arrive before Khutbah starts.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Activities Section -->
+        <section id="activities" class="mb-16 scroll-focused-section">
+            <h3 class="text-3xl font-bold text-center text-gray-800 mb-8">Serving Our Community</h3>
+
+            <div class="grid md:grid-cols-3 gap-6">
+
+                <!-- Activity Cards (use mumsa-card hover effect) -->
+                <div class="bg-white p-6 rounded-2xl mumsa-card border-b-4 border-mumsa-primary">
+                    <div class="flex items-center mb-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-mumsa-accent mr-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                        <h4 class="text-xl font-semibold text-gray-800">Five Daily Prayers</h4>
+                    </div>
+                    <p class="text-gray-600">
+                        We organize and hold the five daily congregational prayers (Jamaat) in a dedicated space on the Murdoch campus. Check the schedule above!
+                    </p>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl mumsa-card border-b-4 border-mumsa-primary">
+                    <div class="flex items-center mb-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-mumsa-accent mr-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9l1.5 1.5M16 8l3 3M20 7l3 3M17 13.5l1.5 1.5M19 12l3 3M14 5l3 3"></path><path d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0z"></path></svg>
+                        <h4 class="text-xl font-semibold text-gray-800">Weekly Jumu'ah</h4>
+                    </div>
+                    <p class="text-gray-600">
+                        The most important weekly gathering. Join us every Friday for the Jumu'ah sermon (1:15 PM) and prayer (1:30 PM).
+                    </p>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl mumsa-card border-b-4 border-mumsa-primary">
+                    <div class="flex items-center mb-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-mumsa-accent mr-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z"></path></svg>
+                        <h4 class="text-xl font-semibold text-gray-800">Ramadan & Iftar</h4>
+                    </div>
+                    <p class="text-gray-600">
+                        We support the community during Ramadan by giving out food, organizing Iftars, and fostering a spirit of sharing and charity.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Location Section -->
+        <section id="location" class="mb-16 scroll-focused-section">
+            <h3 class="text-3xl font-bold text-center text-gray-800 mb-8">Our Prayer Location</h3>
+            <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-xl border-l-4 border-mumsa-primary md:flex items-center">
+                
+                <!-- Address Details -->
+                <div class="md:w-1/2 mb-6 md:mb-0 md:pr-8">
+                    <p class="text-xl font-semibold text-gray-700 mb-2">Daily & Jumu'ah Prayers are held at:</p>
+                    <p class="text-3xl font-extrabold text-mumsa-primary mb-4 leading-tight">
+                        Building 515 Worship Center
+                    </p>
+                    <p class="text-gray-600 text-lg">
+                        Murdoch University, Murdoch WA 6150
+                    </p>
+                    <a href="https://maps.google.com/?q=Murdoch+University+Building+515+Worship+Centre" target="_blank" 
+                       class="mt-6 inline-flex items-center bg-mumsa-accent text-mumsa-primary font-bold py-3 px-6 rounded-full shadow-lg hover:bg-amber-500 transition duration-300 transform hover:scale-105">
+                        View on Map
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="10" r="3"/><path d="M12 21.7c-4.4-4-8-7.5-8-11.7C4 5 7.6 2 12 2s8 3 8 8c0 4.2-3.6 7.7-8 11.7z"/></svg>
+                    </a>
+                </div>
+
+                <!-- Map Placeholder/Styling for Visual Balance -->
+                <div class="md:w-1/2 h-64 bg-gray-200 rounded-xl overflow-hidden relative">
+                    <img src="https://placehold.co/600x400/047857/facc15?text=Building+515+Murdoch+Worship+Center" alt="Map Location Placeholder" class="w-full h-full object-cover opacity-30">
+                    <div class="absolute inset-0 flex flex-col justify-center items-center p-4 bg-black bg-opacity-10">
+                        <p class="text-xl font-bold text-gray-100 drop-shadow-lg">Find the Worship Center</p>
+                        <p class="text-sm text-gray-200">Click the button for live GPS directions.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Gemini AI Assistant Section -->
+        <section id="ai-assistant" class="mb-16 scroll-focused-section">
+            <h3 class="text-3xl font-bold text-center text-gray-800 mb-8">✨ MUMSA Knowledge Bot</h3>
+            <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-xl border-l-4 border-mumsa-accent">
+                <p class="text-center text-lg text-gray-600 mb-4">
+                    Ask any quick question about faith, study balance, or find a beautiful supplication (Dua).
+                </p>
+
+                <div class="flex flex-col sm:flex-row gap-3 mb-6">
+                    <input type="text" id="gemini-input" placeholder="e.g., 'Dua for passing exams' or 'How to manage prayer during class?'"
+                           class="flex-grow p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-mumsa-primary focus:border-mumsa-primary transition-all">
+                    
+                    <button id="gemini-submit" 
+                            class="shrink-0 bg-mumsa-primary text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-emerald-800 transition duration-300">
+                        Ask the Bot ✨
+                    </button>
+                </div>
+
+                <!-- AI Response Area -->
+                <div id="gemini-response" class="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-xl hidden">
+                    <p class="text-sm font-semibold text-mumsa-primary mb-2">Response:</p>
+                    <div id="gemini-text" class="text-gray-700 whitespace-pre-wrap"></div>
+                    <div id="gemini-sources" class="mt-4 pt-2 border-t border-gray-100 text-xs text-gray-500 hidden">
+                        <p class="font-semibold mb-1">Sources:</p>
+                        <ul id="sources-list" class="list-disc list-inside space-y-1"></ul>
+                    </div>
+                </div>
+
+                <div id="gemini-error" class="mt-4 p-4 bg-red-100 border border-red-300 rounded-xl hidden text-red-700">
+                    An error occurred while fetching the response. Please try an alternative query.
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Contact/Social CTA -->
+        <section id="cta-section" class="bg-mumsa-primary text-white p-10 rounded-2xl text-center shadow-2xl scroll-focused-section">
+            <h3 class="text-3xl font-bold mb-3">Connect with MUMSA Today</h3>
+            <p class="mb-6 text-gray-200 max-w-lg mx-auto">
+                Stay updated on events, join the WhatsApp community chat, and find resources for Muslim students at Murdoch.
+            </p>
+            <div class="space-x-4">
+                <!-- WhatsApp Group -->
+                <a href="https://chat.whatsapp.com/MUMSAGroupID" target="_blank" class="inline-block bg-mumsa-accent text-mumsa-primary font-bold py-3 px-8 rounded-full shadow-lg hover:bg-amber-500 transition duration-300 transform hover:scale-105">
+                    Join WhatsApp Group
+                </a>
+                <!-- Updated for Email - Now uses icon and simpler text -->
+                <a href="mailto:mumsa.pr@gmail.com" class="inline-flex items-center border border-white text-white font-bold py-3 px-8 rounded-full hover:bg-white hover:text-mumsa-primary transition duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                    Email Us
+                </a>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white p-6 mt-12">
+        <div class="max-w-6xl mx-auto text-center text-sm">
+            <p>&copy; <span id="current-year"></span> Murdoch University Muslim Students Association (MUMSA).</p>
+            <p class="mt-2 text-gray-400">Disclaimer: Prayer times are fetched live via a third-party API. The Jumu'ah time is manually set.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('current-year').textContent = new Date().getFullYear();
+
+            const loadingMessage = document.getElementById('loading-message');
+            const prayerGrid = document.getElementById('prayer-grid');
+            
+            // Gemini AI Elements
+            const geminiInput = document.getElementById('gemini-input');
+            const geminiSubmit = document.getElementById('gemini-submit');
+            const geminiResponse = document.getElementById('gemini-response');
+            const geminiText = document.getElementById('gemini-text');
+            const geminiError = document.getElementById('gemini-error');
+            const geminiSourcesDiv = document.getElementById('gemini-sources');
+            const sourcesList = document.getElementById('sources-list');
+            
+            // --- Configuration for Live Prayer Times (Perth, WA coordinates) ---
+            const PERTH_LAT = -31.9523; 
+            const PERTH_LON = 115.8613; 
+            // Jumu'ah times are now static in HTML: Khutbah 1:15 PM, Jamaat 1:30 PM
+
+            // Gemini API Setup
+            const geminiApiKey = ""; // Canvas will provide this at runtime
+            const geminiApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${geminiApiKey}`;
+            const systemPrompt = "You are the MUMSA Knowledge Bot, a friendly and informative assistant for Muslim students at Murdoch University. Provide concise and supportive advice on Islamic topics, student life, prayers, or generate Duas (supplications). If asked for a Dua, provide the Arabic text (in a block quote format), its transliteration, and its meaning. Keep answers professional and encouraging.";
+
+            // --- CORE LOGIC: Add 10 minutes for Jamaat (Applies to 5 daily prayers only) ---
+            function calculateJamaatTime(time24h) {
+                try {
+                    const [hoursStr, minutesStr] = time24h.split(':');
+                    let hours = parseInt(hoursStr);
+                    let minutes = parseInt(minutesStr);
+                    
+                    let newMinutes = minutes + 10; // +10 minute rule
+                    if (newMinutes >= 60) {
+                        hours = (hours + 1) % 24; 
+                        newMinutes %= 60;
+                    }
+                    
+                    const finalHours24 = String(hours).padStart(2, '0');
+                    const finalMinutesStr = String(newMinutes).padStart(2, '0');
+
+                    const finalHours12 = hours % 12 || 12; 
+                    const finalPeriod = hours >= 12 ? 'PM' : 'AM';
+                    
+                    const originalHours = parseInt(hoursStr) % 12 || 12;
+                    const originalPeriod = parseInt(hoursStr) >= 12 ? 'PM' : 'AM';
+                    const originalTime12h = `${originalHours}:${minutesStr.padStart(2, '0')} ${originalPeriod}`;
+
+                    return { 
+                        jamaat: `${finalHours12}:${finalMinutesStr} ${finalPeriod}`, 
+                        adhan: originalTime12h,
+                        jamaat24h: `${finalHours24}:${finalMinutesStr}`
+                    };
+
+                } catch (error) {
+                    console.error("Error calculating Jamaat time:", error);
+                    return { jamaat: '--:--', adhan: '--:--', jamaat24h: '23:59' };
+                }
+            }
+
+            // Function to fetch and display prayer times
+            async function fetchPrayerTimes() {
+                const today = new Date();
+                const year = today.getFullYear();
+                const month = today.getMonth() + 1; 
+                const apiUrl = `https://api.aladhan.com/v1/calendar/${year}/${month}?latitude=${PERTH_LAT}&longitude=${PERTH_LON}&method=2`;
+
+                try {
+                    const MAX_RETRIES = 3;
+                    let data = null;
+                    
+                    for (let i = 0; i < MAX_RETRIES; i++) {
+                        const response = await fetch(apiUrl);
+                        if (response.ok) {
+                            data = await response.json();
+                            break;
+                        }
+                        await new Promise(resolve => setTimeout(resolve, Math.pow(2, i) * 1000));
+                    }
+
+                    if (!data) throw new Error("API failed to return data after retries.");
+                    if (data.data.length === 0) throw new Error("No prayer data found.");
+                    
+                    const dayData = data.data.find(day => new Date(day.date.readable).getDate() === today.getDate());
+                    if (!dayData) throw new Error("Could not find today's specific date data.");
+                    
+                    const times = dayData.timings;
+                    const prayerNames = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
+
+                    const prayerSchedule = prayerNames.map(name => {
+                        const adhanTime = times[name].substring(0, 5);
+                        const calculatedTimes = calculateJamaatTime(adhanTime);
+                        return {
+                            name: name,
+                            adhanTime: calculatedTimes.adhan,
+                            jamaatTime24h: calculatedTimes.jamaat24h,
+                            jamaatTime12h: calculatedTimes.jamaat,
+                        };
+                    });
+
+                    // Determine the Next Prayer
+                    const now = new Date();
+                    const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
+                    let nextPrayer = null;
+
+                    for (const prayer of prayerSchedule) {
+                        const [h, m] = prayer.jamaatTime24h.split(':').map(Number);
+                        const prayerTimeMinutes = h * 60 + m;
+                        if (prayerTimeMinutes > currentTimeMinutes) {
+                            nextPrayer = prayer.name;
+                            break;
+                        }
+                    }
+                    
+                    if (!nextPrayer) {
+                        nextPrayer = prayerSchedule[0].name;
+                    }
+
+                    // Build HTML Content and Highlight
+                    let htmlContent = '';
+                    prayerSchedule.forEach(prayer => {
+                        const isNext = prayer.name === nextPrayer;
+                        const highlightClass = isNext 
+                            ? 'border-4 border-mumsa-accent ring-4 ring-mumsa-accent/50 scale-[1.02] bg-white transition duration-500' 
+                            : 'border-b-2 border-mumsa-primary';
+                        
+                        htmlContent += `
+                            <div class="bg-white p-4 rounded-xl text-center mumsa-card transition duration-500 ease-in-out ${highlightClass}">
+                                <p class="text-sm font-semibold text-gray-500">${prayer.name} ${isNext ? '<span class="text-red-600 font-bold">(NEXT)</span>' : ''}</p>
+                                <p class="text-3xl font-extrabold ${isNext ? 'text-red-600' : 'text-mumsa-primary'} mt-1 tracking-tighter">${prayer.jamaatTime12h}</p>
+                                <p class="text-xs text-gray-400 mt-1">Adhan: ${prayer.adhanTime} <span class="text-mumsa-primary font-bold text-base">(+10 min)</span></p>
+                            </div>
+                        `;
+                    });
+
+                    prayerGrid.innerHTML = htmlContent;
+                    prayerGrid.classList.remove('hidden');
+                    loadingMessage.classList.add('hidden');
+
+                } catch (error) {
+                    console.error("Failed to fetch prayer times:", error);
+                    loadingMessage.innerHTML = `<span class="text-red-500 font-semibold">Error fetching times:</span> ${error.message}. Displaying manual Jumu'ah time only.`;
+                    loadingMessage.classList.remove('hidden');
+                }
+            }
+            
+            // --- GEMINI API FUNCTION ---
+            async function handleGeminiQuery() {
+                const query = geminiInput.value.trim();
+                if (!query) return;
+
+                geminiSubmit.disabled = true;
+                geminiSubmit.textContent = 'Thinking...';
+                geminiError.classList.add('hidden');
+                geminiResponse.classList.remove('hidden');
+                geminiText.innerHTML = '<svg class="animate-spin h-5 w-5 mr-3 inline text-mumsa-primary" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Generating response...';
+                geminiSourcesDiv.classList.add('hidden');
+                sourcesList.innerHTML = '';
+                
+                const payload = {
+                    contents: [{ parts: [{ text: query }] }],
+                    tools: [{ "google_search": {} }],
+                    systemInstruction: {
+                        parts: [{ text: systemPrompt }]
+                    },
+                };
+                
+                try {
+                    const MAX_RETRIES = 3;
+                    let result = null;
+                    
+                    for (let i = 0; i < MAX_RETRIES; i++) {
+                        const response = await fetch(geminiApiUrl, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+
+                        if (response.ok) {
+                            result = await response.json();
+                            break;
+                        }
+                        await new Promise(resolve => setTimeout(resolve, Math.pow(2, i) * 1000));
+                    }
+                    
+                    if (!result || !result.candidates?.[0]?.content?.parts?.[0]?.text) {
+                        throw new Error("Invalid or empty response from the AI.");
+                    }
+
+                    const candidate = result.candidates[0];
+                    let generatedText = candidate.content.parts[0].text;
+                    let sources = [];
+                    
+                    const groundingMetadata = candidate.groundingMetadata;
+                    if (groundingMetadata && groundingMetadata.groundingAttributions) {
+                        sources = groundingMetadata.groundingAttributions
+                            .map(attribution => ({
+                                uri: attribution.web?.uri,
+                                title: attribution.web?.title,
+                            }))
+                            .filter(source => source.uri && source.title);
+                    }
+                    
+                    // Display the response
+                    geminiText.innerHTML = generatedText.replace(/\n/g, '<br>');
+
+                    // Display sources if available
+                    if (sources.length > 0) {
+                        sourcesList.innerHTML = sources.map(s => 
+                            `<li><a href="${s.uri}" target="_blank" class="text-mumsa-primary hover:underline">${s.title}</a></li>`
+                        ).join('');
+                        geminiSourcesDiv.classList.remove('hidden');
+                    } else {
+                        geminiSourcesDiv.classList.add('hidden');
+                    }
+                    
+                } catch (error) {
+                    console.error("Gemini API Error:", error);
+                    geminiError.classList.remove('hidden');
+                    geminiText.innerHTML = ''; // Clear loading message
+                    geminiResponse.classList.remove('hidden');
+                } finally {
+                    geminiSubmit.disabled = false;
+                    geminiSubmit.textContent = 'Ask the Bot ✨';
+                }
+            }
+
+            // Event Listener for the Gemini Bot button
+            geminiSubmit.addEventListener('click', handleGeminiQuery);
+            geminiInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    handleGeminiQuery();
+                }
+            });
+
+
+            // --- DYNAMIC SCROLL FOCUS (BLUR) EFFECT ---
+            
+            const sections = document.querySelectorAll('.scroll-focused-section');
+            let ticking = false; 
+
+            function applyBlurEffect() {
+                const viewportCenter = window.innerHeight / 2;
+
+                sections.forEach(section => {
+                    const rect = section.getBoundingClientRect();
+                    
+                    // Calculate the center of the section in the viewport
+                    const sectionCenter = rect.top + rect.height / 2;
+                    
+                    // Calculate the distance from the section's center to the viewport's center
+                    const distance = Math.abs(sectionCenter - viewportCenter);
+                    
+                    // TUNE: If distance is less than 150px (near center), blur is 0. 
+                    // Otherwise, blur scales up to a max of 6px.
+                    let blurAmount = 0;
+                    if (distance > 150) {
+                        // (distance - 150) starts blur after 150px. Divided by 50 for gradual fade.
+                        blurAmount = Math.min(6, (distance - 150) / 50); 
+                    }
+                    
+                    // Apply the blur filter
+                    section.style.filter = `blur(${blurAmount}px)`;
+                });
+
+                ticking = false;
+            }
+
+            // Use requestAnimationFrame to throttle the scroll event for performance
+            window.addEventListener('scroll', () => {
+                if (!ticking) {
+                    window.requestAnimationFrame(() => {
+                        applyBlurEffect();
+                    });
+                    ticking = true;
+                }
+            });
+            
+            // Initial calls
+            applyBlurEffect();
+            fetchPrayerTimes();
+        });
+    </script>
+</body>
+</html>
