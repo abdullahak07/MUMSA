@@ -4,11 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MUMSA - Murdoch University Muslim Students Association</title>
+    
     <!-- Load Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Custom styles for a more elegant, university feel */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Playfair+Display:wght@700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Oswald:wght@700&display=swap');
         
         body {
             font-family: 'Inter', sans-serif;
@@ -20,6 +21,13 @@
         .bg-mumsa-primary { background-color: #047857; }
         .text-mumsa-accent { color: #facc15; } /* Amber 400 - Rich Gold */
         .bg-mumsa-accent { background-color: #facc15; }
+
+        /* --- NEW STYLING: LOGO/HEADLINE TEXT --- */
+        .logo-text-style { 
+            font-family: 'Oswald', sans-serif; 
+            letter-spacing: 0.05em; 
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
 
         /* General Card Styling */
         .mumsa-card {
@@ -68,13 +76,15 @@
     <header class="bg-white shadow-md sticky top-0 z-10">
         <div class="max-w-6xl mx-auto p-4 flex justify-between items-center">
             <div class="flex items-center space-x-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-mumsa-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                <h1 class="text-xl font-extrabold text-mumsa-primary tracking-tight">MUMSA</h1>
+                <!-- LOGO: Uses the uploaded file name -->
+                <img src="LOGO MUMSA PNG.png" alt="MUMSA Logo" class="h-10 w-auto mr-2">
+                <h1 class="text-2xl font-extrabold text-mumsa-primary tracking-widest logo-text-style">MUMSA</h1>
             </div>
             <nav class="space-x-4">
                 <a href="#prayer-times" class="text-sm font-medium text-gray-600 hover:text-mumsa-primary transition-colors">Prayer</a>
                 <a href="#activities" class="text-sm font-medium text-gray-600 hover:text-mumsa-primary transition-colors">Activities</a>
                 <a href="#location" class="text-sm font-medium text-gray-600 hover:text-mumsa-primary transition-colors">Location</a>
+                <a href="#donations" class="text-sm font-bold text-red-600 hover:text-red-700 transition-colors">Donate</a>
                 <a href="#ai-assistant" class="text-sm font-medium text-gray-600 hover:text-mumsa-primary transition-colors hidden sm:inline-block">AI Help</a>
                 <a href="#" class="text-sm font-medium bg-mumsa-accent text-mumsa-primary py-2 px-4 rounded-full shadow-md hover:bg-amber-500 transition-colors hidden sm:inline-block">Join Us</a>
             </nav>
@@ -85,9 +95,12 @@
 
         <!-- Hero Section -->
         <section id="hero-section" class="mb-16 bg-white p-8 sm:p-12 rounded-2xl mumsa-card border-t-4 border-mumsa-primary scroll-focused-section">
-            <h2 class="text-4xl sm:text-5xl font-extrabold text-gray-900 mb-3 leading-tight font-['Playfair_Display']">
-                Welcome to the <span class="text-mumsa-primary">Murdoch University Muslim Students Association</span>
-            </h2>
+            <div class="flex items-center space-x-4 mb-4">
+                <img src="LOGO MUMSA PNG.png" alt="MUMSA Logo" class="h-16 w-auto">
+                <h2 class="text-5xl sm:text-6xl font-extrabold text-gray-900 leading-tight logo-text-style">
+                    <span class="text-mumsa-primary">MURDOCH UNIVERSITY</span> MUSLIM STUDENTS ASSOCIATION
+                </h2>
+            </div>
             <p class="text-lg sm:text-xl text-gray-600">
                 A hub for faith, community, and service. Connect with us for daily prayers, Friday gatherings, and support throughout the academic year.
             </p>
@@ -175,6 +188,46 @@
             </div>
         </section>
 
+        <!-- Donations Section -->
+        <section id="donations" class="mb-16 scroll-focused-section">
+            <h3 class="text-3xl font-bold text-center text-gray-800 mb-8">Support MUMSA (Sadaqa Jariyah)</h3>
+            <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-xl border-l-4 border-red-600">
+                <p class="text-xl font-semibold text-gray-700 mb-4">
+                    Your generous support helps us maintain the prayer space, provide Iftar meals during Ramadan, and organize essential community programs.
+                </p>
+                <p class="text-gray-600 mb-6">
+                    Every donation is a continuous charity (Sadaqa Jariyah) that supports the spiritual and social well-being of Muslim students on campus.
+                </p>
+
+                <div class="grid md:grid-cols-2 gap-6 mt-6">
+                    
+                    <!-- Option 1: Secure Online Payment (Placeholder for payment link) -->
+                    <div class="p-5 bg-green-50 rounded-xl border border-green-200">
+                        <h4 class="text-xl font-bold text-mumsa-primary mb-3">1. Donate Online (Recommended)</h4>
+                        <p class="text-gray-600 mb-4">
+                            The safest and quickest way to donate is through our dedicated online payment link (e.g., Stripe, PayPal, or a dedicated fundraising platform).
+                        </p>
+                        <a href="#" target="_blank" class="inline-block bg-green-600 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-green-700 transition duration-300">
+                            Secure Payment Link
+                        </a>
+                    </div>
+
+                    <!-- Option 2: Bank Transfer (with security disclaimer) -->
+                    <div class="p-5 bg-yellow-50 rounded-xl border border-yellow-200">
+                        <h4 class="text-xl font-bold text-yellow-700 mb-3">2. Bank Transfer</h4>
+                        <p class="text-gray-600 mb-4">
+                            If you prefer bank transfer, please find the details below. **Please exercise caution when sharing or receiving bank details.**
+                        </p>
+                        <div class="p-3 bg-white border border-gray-300 rounded-lg text-sm">
+                            <p><strong>Account Name:</strong> MUMSA Association</p>
+                            <p><strong>BSB:</strong> XXX-XXX</p>
+                            <p><strong>Account No:</strong> XXXXXXXX</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
         <!-- Location Section -->
         <section id="location" class="mb-16 scroll-focused-section">
             <h3 class="text-3xl font-bold text-center text-gray-800 mb-8">Our Prayer Location</h3>
@@ -253,7 +306,7 @@
                 <a href="https://chat.whatsapp.com/MUMSAGroupID" target="_blank" class="inline-block bg-mumsa-accent text-mumsa-primary font-bold py-3 px-8 rounded-full shadow-lg hover:bg-amber-500 transition duration-300 transform hover:scale-105">
                     Join WhatsApp Group
                 </a>
-                <!-- Updated for Email - Now uses icon and simpler text -->
+                <!-- Email Link -->
                 <a href="mailto:mumsa.pr@gmail.com" class="inline-flex items-center border border-white text-white font-bold py-3 px-8 rounded-full hover:bg-white hover:text-mumsa-primary transition duration-300">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
                     Email Us
